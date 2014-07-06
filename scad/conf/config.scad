@@ -64,6 +64,8 @@ M8_clearance_radius = 8.4 / 2;
 M8_nut_radius = 15.4 / 2;
 M8_nut_depth = 6.5;
 
+M8_manchon_depth = 30;
+
 cnc_tool_dia = 2.4;
 layer_height = 0.4;
 filament_width = layer_height * 1.5;
