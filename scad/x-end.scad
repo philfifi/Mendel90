@@ -330,7 +330,13 @@ module x_end_bracket(motor_end, integral_support = false){
 
                 if(integral_support)
                     translate([-z_bar_offset(), 0, nut_shelf])
+                    difference() {
                         cylinder(r = Z_nut_radius + 1, h = 2 * layer_height, center = true);
+                        // Make a very small hole in the layer, so
+                        // that the slicer don't fell that there is a
+                        // fully closed shape inside.
+                        cylinder(r = 0.1, h = 2 * layer_height, center = true);
+                        }
             }
 
             translate([-z_bar_offset(), 0, -thickness / 2 - 1])
