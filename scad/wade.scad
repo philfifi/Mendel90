@@ -23,7 +23,6 @@ module b608(h = 7) {
 screw_depth = 5;
 
 motor_y = 28;
-driven_y = 31.5;
 motor_min = 26 + 5;
 motor_max = 36;
 motor_x = (motor_min + motor_max) / 2;
@@ -50,11 +49,11 @@ jhead_screw_pitch = max(hot_end_insulator_diameter(hot_end) / 2 + screw_head_rad
 extension_rad = jhead_screw_pitch + 5;
 extension_clearance = 1;
 
-pscrew_y = [17.5, 45.5];
-pscrew_z = [filament_z - 6.5, filament_z + 6.5];
-
 driven_x = 70;
 driven_y = 31.5;
+
+pscrew_y = [driven_y - 14, driven_y + 14];
+pscrew_z = [filament_z - 6.5, filament_z + 6.5];
 
 bearing_housing_depth = 24 + 2 * filament_width;
 bearing_housing_x = 57;
@@ -129,9 +128,9 @@ module wades_block_stl() {
         translate([-11,-1,30]) rotate([0,60,0]) cube([30, base_thickness + 2, 60]);             // slope on base
 
 
-        translate([filament_x, 20, filament_z])
+        translate([filament_x, driven_y, filament_z])
             rotate([90,0,0])
-                teardrop(h = 70, r=4/2, center=true);                       // filament
+                teardrop(h = 2*height, r=4/2, center=true);                       // filament
 
         // mounting holes
         for(side = [-1, 1])
@@ -160,22 +159,22 @@ module wades_block_stl() {
         // holes for motor
         //
         translate([motor_x, motor_y, -1]) {
-            slot(r = NEMA_big_hole(NEMA17), l = motor_leeway, h = 10, center = false);      // motor hub slot
+            slot(r = NEMA_big_hole(NEMA17), l = motor_leeway, h = 2*thickness, center = false);      // motor hub slot
 
             for(x = NEMA_holes(NEMA17))                                                     // motor screw slots
                 for(y = NEMA_holes(NEMA17))
                     translate([x,y,0])
-                        slot(r = M3_clearance_radius, l = motor_leeway, h = 10, center = false);
+                        slot(r = M3_clearance_radius, l = motor_leeway, h = 2*thickness, center = false);
         }
 
         //
         // remove fourth motor slot
         //
         translate([motor_x - 40 + motor_leeway / 2, motor_y - NEMA_big_hole(NEMA17), -1])
-            cube([40, 32, 7]);
+            cube([40, 32, 2+thickness]);
 
         translate([motor_x - 40 + motor_leeway / 2 + 6, motor_y, -1])
-            cube([40, 32, 7]);
+            cube([40, 32, 2+thickness]);
 
         translate([-1,-1,-1]) cube([12,60,30]);              // truncates tail
 
