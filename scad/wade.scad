@@ -71,6 +71,8 @@ clamp_depth = hot_end_inset(hot_end) - 1;
 clamp_width = 2 * (hot_end_screw_pitch(hot_end) + max(screw_clearance_radius(M3_cap_screw) + min_wall, clamp_depth / 2));
 clamp_height = width - filament_z - 0.5;
 
+hobbed_hole_radius = M8_clearance_radius +0.4;
+
 function extruder_connector_offset() = [-filament_x + motor_x, filament_z - thickness, motor_y] + d_motor_connector_offset(NEMA17);
 
 module keyhole(r, h, l) {
@@ -199,19 +201,35 @@ module wades_block_stl() {
         //
         // hole for hobbed bolt
         //
-        difference() {
-            translate([driven_x,     driven_y, 7 + layer_height + eta])
-                poly_cylinder(r = M8_clearance_radius + 0.25, h = 30);
+        translate([driven_x,     driven_y, 7 + layer_height + eta])
+        cylinder(r = hobbed_hole_radius, h = 30);
+//        cube([8, 8, 30], center=true);
 
-            translate([driven_x + 2, driven_y - 5, filament_z + 4 - eta])
-                cube([10, 10, layer_height + eta]); // support bridge
-        }
+        translate([driven_x,     driven_y-hobbed_hole_radius, filament_z-2])
+        cube([20, 2*hobbed_hole_radius, 30]);
+
         //
         // Sockets for bearings
         //
         translate([driven_x,       driven_y, width - 7])       b608_clearance(8);      // top bearing socket
-        translate([filament_x + 8, driven_y, filament_z - 4])  b608(8);                // clearance for idler
+        translate([filament_x+11,  driven_y, filament_z - 4 ]) b608(8+20);             // clearance for idler
         translate([driven_x,       driven_y, -1 + eta])        b608(8);                // bottom bearing socket
+
+        translate([filament_x+11, driven_y, -eta ])
+        difference() {
+            union() {
+                cylinder(r=4+2, h=20);                // clearance for idler
+                translate([-10, -5, 0]) cube([10, 10, 7+2*eta]);
+            }
+            translate([-10,-10,8-1+eta]) cube([20,20,layer_height+eta]);
+        }
+
+        // Cut as a square the filament hole between the ball bearing so that the print is easier
+        translate([filament_x, driven_y, filament_z]) cube([4, 13, 4], center=true);
+        hull() {
+            translate([filament_x+2, driven_y-13/2, filament_z-2]) cube([eta, 13, 10]);
+            translate([filament_x-2, driven_y-hobbed_hole_radius, filament_z-2]) cube([eta, 2*hobbed_hole_radius, 10]);
+        }
 
         //
         // Hole for hot end
