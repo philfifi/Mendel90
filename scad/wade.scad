@@ -19,6 +19,13 @@ module b608(h = 7) {
     cylinder(r = 11.01, h = h);
 }
 
+module b608_clearance(h = 7) {
+    union() {
+        b608(h);
+        translate([0, 0, -layer_height-eta]) cylinder(r = 9, h = h+2*layer_height);
+    }
+}
+
 
 screw_depth = 5;
 
@@ -202,7 +209,7 @@ module wades_block_stl() {
         //
         // Sockets for bearings
         //
-        translate([driven_x,       driven_y, width - 7])       b608(8);                // top bearing socket
+        translate([driven_x,       driven_y, width - 7])       b608_clearance(8);      // top bearing socket
         translate([filament_x + 8, driven_y, filament_z - 4])  b608(8);                // clearance for idler
         translate([driven_x,       driven_y, -1 + eta])        b608(8);                // bottom bearing socket
 
